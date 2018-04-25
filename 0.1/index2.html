@@ -10,9 +10,6 @@
         angular.module("ondEsta", []);
         angular.module("ondEsta").controller("ondEstaCtrl", function ($scope, $http) {
 
-
-            $scope.showMap = true;
-
             /*Para desenhar e printar os pontos no click - utilizado apenas quando for fazer o mapa grafo */
             /*var x = 1;
             canvas.addEventListener('click', function(event) {
@@ -24,173 +21,54 @@
              }, false);*/
 
             var desenhaVertices = function () {
-                vertices.map(function (p) {
-                    context.lineWidth = 7;
-                    context.strokeStyle = 'black';
-                    context.strokeRect(p.lat,p.lng,1,1);
 
-                    context.lineWidth = 6;
-                    context.font = "10px Arial";
-                    context.fillStyle = "blue";
+                vertices.map(function (p) {
+                    /*TODO Organizar melhor os dados de estilo do context*/
+                    context.globalAlpha = 1;
+                    context.lineWidth = 7;
+                    /*context.strokeRect(p.lat,p.lng,1,1);*/
+                    context.beginPath();
+                    context.strokeStyle = 'blue';
+                    context.shadowOffsetX = null;
+                    context.shadowOffsetY = null;
+                    context.shadowColor = null;
+                    context.shadowBlur = null;
+                    context.lineWidth = 5;
+                    context.arc(p.lat, p.lng, 2, 0, 2 * Math.PI, true);
+                    context.fill();
+                    context.stroke();
+
+                    context.lineWidth = 15;
+                    context.font = "bold 12px Arial";
+                    context.fillStyle = "black";
                     context.textAlign = "center";
-                    context.fillText(p.nome, p.lat,p.lng -4);
+                    context.fillText(p.nome.substr(1), p.lat -2,p.lng -7);
+                    context.globalAlpha = 0.2;
                 });
             };
 
-            function calcWaypoints(vertices) {
-                var waypoints = [];
-                for (var i = 1; i < vertices.length; i++) {
-                    var pt0 = vertices[i - 1];
-                    var pt1 = vertices[i];
-                    var dx = pt1.x - pt0.x;
-                    var dy = pt1.y - pt0.y;
-                    for (var j = 0; j < 70; j++) {
-                        var x = pt0.x + dx * j / 70;
-                        var y = pt0.y + dy * j / 70;
-                        waypoints.push({
-                            x: x,
-                            y: y
-                        });
-                    }
-                }
-                return (waypoints);
-            }
+            $scope.buscarInfos = function (p) {
+                /*Alterar botões*/
+                $scope.btnAlterar = true;
+                $scope.btnSalvar = false;
+                $scope.btnNovoProduto = true;
 
-            /*Desenha as arestas*/
-            var desenhaCaminho = function () {
-
-                var allPoints = [];
-                /*Pego todos os pontos que retornaram do server*/
-                steps.map(function (p, index) {
-                    vertices.map(function (vertice, index) {
-                        if (p.replace('\t', '').replace(' ', '') == vertice.nome.replace(' ', ''))
-                            allPoints.push({
-                                x: vertice.lat,
-								y: vertice.lng
-                            });
-						});
-                    });
-
-                /*Pego todos os pontos do canvas*/
-                var points = calcWaypoints(allPoints);
-
-                /*context.setLineDash([5, 5]);*/
-                context.strokeStyle = 'blue';
-                context.lineCap = 'round';
-                context.lineJoin = 'round';
-                context.lineWidth = 4;
-                context.fillStyle = "rgba(0, 0, 200, 0.5)";
-
-                // extend the line from start to finish with animation
-                points.map(function (value, index) {
-
-						setTimeout(function (){
-                            context.lineCap = 'round';
-                            context.lineWidth = 2;
-                            /*Primeiro*/
-                            if(index === 0){
-								context.beginPath();
-								context.strokeStyle = 'blue';
-								context.shadowOffsetX = null;
-								context.shadowOffsetY = null;
-								context.shadowColor = null;
-								context.shadowBlur = null;
-								context.lineWidth = 1;
-								context.arc(value.x, value.y, 5, 0, 2 * Math.PI, true);
-								context.fill();
-								context.stroke();
-
-                                context.moveTo(value.x, value.y)
-                                context.beginPath();
-                            }else if(index < points.length -1){
-                                context.lineTo(value.x,value.y);
-                                context.stroke();
-                            }
-
-                            /*ULTIMO*/
-                            if(index === points.length -1) {
-                                    /*para o desenho do caminho*/
-                                setTimeout(function () {
-                                    context.stroke();
-                                    context.setLineDash([]);
-
-                                    /*Desenha o circulo de dentro*/
-                                    context.beginPath();
-                                    context.shadowOffsetX = null;
-                                    context.shadowOffsetY = null;
-                                    context.shadowColor = null;
-                                    context.shadowBlur = null;
-                                    context.lineWidth = 4;
-                                    context.arc(value.x, value.y, 5, 0, 2 * Math.PI, true);
-                                    context.fill();
-                                    context.stroke();
-
-
-                                    context.beginPath();
-                                    context.shadowOffsetX = null;
-                                    context.shadowOffsetY = null;
-                                    context.shadowColor = null;
-                                    context.shadowBlur = null;
-
-                                    /*Desenha o circulo (região preenchida)*/
-                                    context.lineWidth = 2
-                                    context.arc(value.x, value.y, 35, 0, 2 * Math.PI, true);
-                                    context.fillStyle = "rgb(0, 0,255, 0.1)";
-                                    context.fill();
-
-                                    context.stroke();
-
-                                    // draw the stroke
-                                    /*context.lineWidth = 2;
-                                    context.strokeStyle = "red";
-                                    context.stroke();*/
-                                    /* var base_image2 = new Image();
-                                     base_image2.src = 'lupa.png';
-                                     base_image2.setAttribute('height', '10px')
-
-                                     /!*Carrega a imagem de proximidade*!/
-                                     base_image2.onload = function(){
-                                         context.drawImage(base_image2, value.x - 88, value.y - 96);
-                                         setTimeout(function () {
-                                             var a = 42;
-                                         }, 500)
-                                     }*/
-                                }, 150)
-
-							}
-                        }, 0);
-                        /*context.setLineDash([5, 5]);*/
-				});
-
-
-                /*percorre os steps e desenha*/
-                /*var interval = 1000;
-                steps.map(function (p, index) {
-                    percorrerVerticesEPrintar(p, index == steps.length -1, index, interval);
-                    interval += 100;
-                });*/
-            };
-
-            $scope.buscarCaminhos = function (p) {
-                $scope.produtoCurrent = p.name;
-                steps = [];
                 context.clearRect(0, 0, 900, 900);
                 context.putImageData(imageDataContext, 0, 0);
+                desenhaVertices();
+                $scope.produto.nome = p.name;
+                $scope.produto.ponto = p.ponto;
+                $scope.produto.id = p.id;
 
-                $http({
-                    method : "GET",
-                    url : 'http://10.10.10.81:8080/dijkstra/' + a + '/' + p.ponto,
-                    transformResponse: [function (data, headers) { //retornar sem parse
-                        return data;
-                    }]
-                }).then(function mySuccess(response) {
-                    steps = response.data.split(",");
-                    steps.pop();
-                    /*Depois de carregar as requisições, chama o desenho do mapa*/
-                    desenhaCaminho();
-                }, function myError(response) {
-                    console.log(response)
-                });
+                vertices.map(function (vertice) {
+                    if(vertice.nome === "P" +p.ponto.toString()){
+                        context.globalAlpha = 1;
+                        console.log("entrei");
+                        context.lineWidth = 15;
+                        context.strokeStyle = 'green';
+                        context.strokeRect(vertice.lat,vertice.lng,1,1);
+					}
+				})
             };
 
             $scope.myFunction = function(c){
@@ -201,24 +79,121 @@
                     $scope.criteria = $scope.criteria + c;
 				}
 
-            };
+            };''
+
+            $scope.alterarProduto = function(){
+                $scope.btnSalvar = true;
+                $scope.permiteAlterar = false;
+                $scope.btnAlterar = false;
+                $scope.false = true;
+                $scope.btnNovoProduto = false;
+			}
+
+			$scope.inserirProduto = function () {
+                $scope.limparArea();
+                /*altero botões*/
+                $scope.btnSalvar = true;
+                $scope.permiteAlterar = false;
+                $scope.btnAlterar = false;
+                $scope.btnNovoProduto = false;
+
+                /*Zero o current*/
+                $scope.produto = {
+                    nome: null,
+                    ponto: null,
+                    id: null
+                }
+            }
+
+            $scope.salvarProduto = function () {
+
+                /*validação*/
+                if($scope.produto.nome === null || $scope.produto.ponto === null){
+                    alert("Erro - Você deve cadastrar nome e ponto do produto!")
+					return;
+				}
+
+                /*TODO Melhorar maneira de dar o PUT (Sem ter que fazer o map)*/
+                if($scope.produto.id !== null) { //Se for diferente de nulo, estou alterando algum produto
+                    $scope.friends.map(function (produto) {
+                        if (produto.id === $scope.produto.id) {
+                            /*Atualizo na lista*/
+                            produto.name = $scope.produto.nome;
+                            produto.ponto = $scope.produto.ponto;
+                            produto.id = $scope.produto.id;
+
+                            /*atualizo no banco*/
+                            $http({
+                                url: 'http://10.10.10.81:8080/produtos',
+                                method: "PUT",
+                                data: produto
+                            })
+                                .then(function (response) {
+                                        console.log(response.data);
+                                        alert("Alterado com Sucesso!");
+                                    },
+                                    function (response) { // optional
+                                        alert("Erro ao Salvar");
+                                    });
+                        }
+                    });
+                }else{ //Se for nulo, estou adicionando um produto
+                    var x = {
+                        name: $scope.produto.nome,
+						ponto: $scope.produto.ponto
+					}
+                    $http({
+                        url: 'http://10.10.10.81:8080/produtos',
+                        method: "POST",
+                        data: x
+                    })
+                        .then(function(response) {
+                            	$scope.friends.push(response.data);
+                                alert("Inserido com Sucesso!");
+                            },
+                            function(response) { // optional
+                                alert("Erro ao Salvar");
+                            });
+				}
+
+                $scope.limparArea();
+            }
+
+			$scope.limparArea = function () {
+
+                $scope.btnSalvar = false;
+                $scope.btnAlterar = false;
+                $scope.btnNovoProduto = true;
+                $scope.permiteAlterar = true;
+
+                context.clearRect(0, 0, 900, 900);
+                context.putImageData(imageDataContext, 0, 0);
+                desenhaVertices();
+
+                $scope.produto = {
+                    nome: null,
+                    ponto: null
+                }
+            }
 
             var importaImagem = function () {
+                context.globalAlpha = 0.2;
                 var base_image = new Image();
                 base_image.src = 'layout-interno-supermercado.jpg';
                 base_image.onload = function(){
                     context.drawImage(base_image, 0, 0);
                     imageDataContext = context.getImageData(0,0,canvas.width,canvas.height);
+                    desenhaVertices();
                 };
             };
 
             /*CANVAS*/
             var context = document.getElementById('myCanvas').getContext('2d');
             var canvas = document.getElementById('myCanvas');
-            /*Demais variaveis*/
-            $scope.criteria = "";
-            $scope.friends = []
 
+            /*Demais variaveis*/
+            /*TODO Alterar variaveis para usar o scope do Angular*/
+            $scope.criteria = "";
             $scope.produtoCurrent = null;
             var vertices = [
                 { nome: "P1",lat:112 ,lng:62 },
@@ -348,22 +323,32 @@
                 { nome: "P125",lat:642 ,lng:410 }
             ]
             var steps = null;
-            $scope.showList = false;
-
             var a = 99;
             var imageDataContext = null;
-            document.getElementById('myInput').focus();
+            $scope.produto = {
+                nome: null,
+                ponto: null,
+                id: null
+            }
+            $scope.permiteAlterar = true;
+            $scope.btnSalvar = false;
+            $scope.btnAlterar = false;
+            $scope.btnNovoProduto = true;
 
-			/*PRIMEIRO GET NO BANCO - LISTA DE PRODUTOS*/
+            /*Get na lista para carregar*/
             $http({
                 method : "GET",
                 url : "http://10.10.10.81:8080/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
-                importaImagem()
+                importaImagem();
+                document.getElementById('myInput').focus();
             }, function myError(response) {
+                alert("Falha ao buscar dados, verifique se o servidor está no ar!");
                 console.log(response)
             });
+
+
         });
 	</script>
 </head>
@@ -371,98 +356,28 @@
 <div ng-controller="ondEstaCtrl">
 	<div>
 		<div class="page-header" style="margin: 0 0 0 20px">
-			<h1> <a style="color: black" href="index2.html">ondEstá? </a></strong><small> - Supermercado Carrefour Campinas Cambuí</small></h1>
+			<h1> <a style="color: black" href="index.html">ondEstá? - Gerenciador</a></strong><small> - Supermercado Carrefour Campinas Cambuí</small></h1>
 		</div>
-		<div class=" col-xs-12 col-sm-8">
-			<canvas id='myCanvas' width='680' height='460'>
-				Canvas not supported
-			</canvas>
-			<p><strong>Mostrando no momento</strong> - {{produtoCurrent}}</p>
 
-			<div class="container">
-				<ul class="list-inline">
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="arroz.jpg" style="width: 100px; height: 100px;">
-								<div class="caption">
-									<p>R$ 14,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="queijo-ralado.jpg" style="width: 100px; height: 100px;"	>
-								<div class="caption">
-									<p>R$ 2,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="queijo-ralado.jpg" style="width: 100px; height: 100px;"	>
-								<div class="caption">
-									<p>R$ 2,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="queijo-ralado.jpg" style="width: 100px; height: 100px;"	>
-								<div class="caption">
-									<p>R$ 2,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="queijo-ralado.jpg" style="width: 100px; height: 100px;"	>
-								<div class="caption">
-									<p>R$ 2,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div>
-							<div class="thumbnail">
-								<img src="queijo-ralado.jpg" style="width: 100px; height: 100px;"	>
-								<div class="caption">
-									<p>R$ 2,90</p>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
-		<div class="col-xs-6 col-sm-4 sidebar-offcanvas text-center" style="margin-top: 10px; height: 300px">
-			<div class="panel panel-primary">
+		<div class="col-xs-6 col-sm-4 sidebar-offcanvas text-center" style="margin-top: 10px; height: 600px">
+			<div class="panel panel-default">
 				<div class="panel-heading clearfix">
-					<h3 class="panel-title">Está procurando algo?</h3>
+					<h3 class="panel-title">Lista de Produtos</h3>
 				</div>
-				<div class="panel-body">
-					<input ng-disabled="true" class="form-control"  id="myInput" type="text" ng-model="criteria" placeholder="Use o teclado para digitar o nome do produto">
+				<div class="panel-body" style="height: 550px">
+					<input class="form-control"  id="myInput" type="text" ng-model="criteria" placeholder="Digite aqui o nome do produto">
 
 					<hr>
 					<!--LISTA-->
 					<ul class="list-group">
-						<div ng-repeat="friend in friends | filter : criteria ">
-							<li ng-click="buscarCaminhos(friend)" class="list-group-item">{{friend.name}}</li>
+						<div ng-repeat="friend in friends | filter:criteria">
+							<li ng-click="buscarInfos(friend)" class="list-group-item">{{friend.name}}</li>
 						</div>
 					</ul>
 				</div>
 			</div>
 			<!--TECLADO-->
-			<div class="row">
+			<!--<div class="row" style="margin-left: 10px">
 				<ul id="keyboard">
 					<div class="row text-center">
 						<li class="letter" ng-click="myFunction('q')">q</li>
@@ -503,8 +418,30 @@
 						<li class="space" ng-click="myFunction(' ')"> 		</li>
 					</div>
 				</ul>
-			</div>
+			</div>-->
 		</div>
+		<div class="col-sm-6">
+			<h3>Informações sobre o produto</h3>
+			<div class="col-sm-6">
+				<div class="input-group">
+					<span class="titleManager input-group-addon ">Nome</span>
+					<input type="text" class=" valueManager form-control " placeholder="Nome do Produto" ng-model="produto.nome" ng-disabled="permiteAlterar">
+				</div>
+				<div class="input-group">
+					<span class="titleManager input-group-addon ">Ponto</span>
+					<input type="number" class=" valueManager form-control " placeholder="Ponto do produto no mapa" ng-model="produto.ponto" ng-disabled="permiteAlterar">
+				</div>
+				<br>
+				<button ng-if="btnAlterar" type="button" class="btn btn-danger pull-right" ng-click="alterarProduto()">Alterar produto</button>
+				<button ng-if="btnSalvar" type="button" class="btn btn-success pull-left" ng-click="salvarProduto()">Salvar</button>
+				<button ng-if="btnSalvar" type="button" class="btn btn-danger pull-right" ng-click="limparArea()">Cancelar</button>
+				<button ng-if="btnNovoProduto" type="button" class="btn btn-default pull-left" ng-click="inserirProduto()">Inserir Novo Produto</button>
+			</div>
+			<canvas id='myCanvas' width='680' height='460'>
+				Canvas not supported
+			</canvas>
+
+
 	</div>
 </div>
 
