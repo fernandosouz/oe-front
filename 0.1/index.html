@@ -120,7 +120,7 @@
                                     context.shadowOffsetY = null;
                                     context.shadowColor = null;
                                     context.shadowBlur = null;
-                                    context.lineWidth = 4;
+                                    context.lineWidth = 3;
                                     context.arc(value.x, value.y, 5, 0, 2 * Math.PI, true);
                                     context.fill();
                                     context.stroke();
@@ -133,8 +133,8 @@
                                     context.shadowBlur = null;
 
                                     /*Desenha o circulo (região preenchida)*/
-                                    context.lineWidth = 2
-                                    context.arc(value.x, value.y, 35, 0, 2 * Math.PI, true);
+                                    context.lineWidth = 1.5
+                                    context.arc(value.x, value.y, 20, 0, 2 * Math.PI, true);
                                     context.fillStyle = "rgb(0, 0,255, 0.1)";
                                     context.fill();
 
@@ -179,7 +179,7 @@
 
                 $http({
                     method : "GET",
-                    url : 'http://10.10.10.81:8080/dijkstra/' + a + '/' + p.ponto,
+                    url : 'http://192.168.0.25:8080/dijkstra/' + a + '/' + p.ponto,
                     transformResponse: [function (data, headers) { //retornar sem parse
                         return data;
                     }]
@@ -346,7 +346,7 @@
                 { nome: "P123",lat:637 ,lng:319 },
                 { nome: "P124",lat:639 ,lng:360 },
                 { nome: "P125",lat:642 ,lng:410 },
-                { nome: "P126",lat:642 ,lng:420 }
+                { nome: "P126",lat:642 ,lng:430 }
             ]
             var steps = null;
             $scope.showList = false;
@@ -358,7 +358,7 @@
 			/*PRIMEIRO GET NO BANCO - LISTA DE PRODUTOS*/
             $http({
                 method : "GET",
-                url : "http://10.10.10.81:8080/produtos/listall/"
+                url : "http://192.168.0.25:8080/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
                 importaImagem()

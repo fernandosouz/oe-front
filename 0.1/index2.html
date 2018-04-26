@@ -124,7 +124,7 @@
 
                             /*atualizo no banco*/
                             $http({
-                                url: 'http://10.10.10.81:8080/produtos',
+                                url: 'http://192.168.0.25:8080/produtos',
                                 method: "PUT",
                                 data: produto
                             })
@@ -143,7 +143,7 @@
 						ponto: $scope.produto.ponto
 					}
                     $http({
-                        url: 'http://10.10.10.81:8080/produtos',
+                        url: 'http://192.168.0.25:8080/produtos',
                         method: "POST",
                         data: x
                     })
@@ -321,7 +321,7 @@
                 { nome: "P123",lat:637 ,lng:319 },
                 { nome: "P124",lat:639 ,lng:360 },
                 { nome: "P125",lat:642 ,lng:410 },
-                { nome: "P126",lat:642 ,lng:420 }
+                { nome: "P126",lat:642 ,lng:430 }
             ]
             var steps = null;
             var a = 99;
@@ -339,7 +339,7 @@
             /*Get na lista para carregar*/
             $http({
                 method : "GET",
-                url : "http://10.10.10.81:8080/produtos/listall/"
+                url : "http://192.168.0.25:8080/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
                 importaImagem();
