@@ -179,7 +179,7 @@
 
                 $http({
                     method : "GET",
-                    url : 'http://192.168.0.25:8080/dijkstra/' + a + '/' + p.ponto,
+                    url : 'http://192.168.43.147:8080/dijkstra/' + a + '/' + p.ponto,
                     transformResponse: [function (data, headers) { //retornar sem parse
                         return data;
                     }]
@@ -220,134 +220,24 @@
             $scope.friends = []
 
             $scope.produtoCurrent = null;
-            var vertices = [
-                { nome: "P1",lat:112 ,lng:62 },
-                { nome: "P2",lat:112 ,lng:113 },
-                { nome: "P3",lat:112 ,lng:153 },
-                { nome: "P4",lat:113 ,lng:207 },
-                { nome: "P5",lat:112 ,lng:252 },
-                { nome: "P6",lat:112 ,lng:295 },
-                { nome: "P7",lat:112 ,lng:341 },
-                { nome: "P8",lat:148 ,lng:62 },
-                { nome: "P9",lat:148 ,lng:270 },
-                { nome: "P10",lat:148 ,lng:294 },
-                { nome: "P11",lat:148 ,lng:373 },
-                { nome: "P12",lat:171 ,lng:62 },
-                { nome: "P13",lat:171 ,lng:98 },
-                { nome: "P14",lat:171 ,lng:131 },
-                { nome: "P15",lat:171 ,lng:177 },
-                { nome: "P16",lat:171 ,lng:214 },
-                { nome: "P17",lat:171 ,lng:255 },
-                { nome: "P18",lat:171 ,lng:299 },
-                { nome: "P19",lat:171 ,lng:394 },
-                { nome: "P20",lat:210 ,lng:62 },
-                { nome: "P21",lat:210 ,lng:96 },
-                { nome: "P22",lat:210 ,lng:130 },
-                { nome: "P23",lat:210 ,lng:176 },
-                { nome: "P24",lat:210 ,lng:215 },
-                { nome: "P25",lat:210 ,lng:258 },
-                { nome: "P26",lat:210 ,lng:298 },
-                { nome: "P27",lat:210 ,lng:329 },
-                { nome: "P28",lat:210 ,lng:366 },
-                { nome: "P29",lat:210 ,lng:407 },
-                { nome: "P30",lat:232 ,lng:62 },
-                { nome: "P31",lat:232 ,lng:329 },
-                { nome: "P32",lat:255 ,lng:62 },
-                { nome: "P33",lat:255 ,lng:97 },
-                { nome: "P34",lat:255 ,lng:125 },
-                { nome: "P35",lat:255 ,lng:173 },
-                { nome: "P36",lat:255 ,lng:212 },
-                { nome: "P37",lat:255 ,lng:262 },
-                { nome: "P38",lat:255 ,lng:299 },
-                { nome: "P39",lat:255 ,lng:329 },
-                { nome: "P40",lat:277 ,lng:62 },
-                { nome: "P41",lat:277 ,lng:329 },
-                { nome: "P42",lat:295 ,lng:62 },
-                { nome: "P43",lat:298 ,lng:94 },
-                { nome: "P44",lat:295 ,lng:126 },
-                { nome: "P45",lat:295 ,lng:168 },
-                { nome: "P46",lat:295 ,lng:208 },
-                { nome: "P47",lat:295 ,lng:254 },
-                { nome: "P48",lat:295 ,lng:293 },
-                { nome: "P49",lat:295 ,lng:329 },
-                { nome: "P50",lat:322 ,lng:62 },
-                { nome: "P51",lat:322 ,lng:329 },
-                { nome: "P52",lat:341 ,lng:62 },
-                { nome: "P53",lat:341 ,lng:97 },
-                { nome: "P54",lat:341 ,lng:130 },
-                { nome: "P55",lat:341 ,lng:166 },
-                { nome: "P56",lat:341 ,lng:208 },
-                { nome: "P57",lat:341 ,lng:251 },
-                { nome: "P58",lat:341 ,lng:289 },
-                { nome: "P59",lat:341 ,lng:329 },
-                { nome: "P60",lat:361 ,lng:62 },
-                { nome: "P61",lat:361 ,lng:329 },
-                { nome: "P62",lat:383 ,lng:62 },
-                { nome: "P63",lat:383 ,lng:62 },
-                { nome: "P64",lat:383 ,lng:123 },
-                { nome: "P65",lat:383 ,lng:169 },
-                { nome: "P66",lat:383 ,lng:205 },
-                { nome: "P67",lat:383 ,lng:248 },
-                { nome: "P68",lat:383 ,lng:288 },
-                { nome: "P69",lat:383 ,lng:329 },
-                { nome: "P70",lat:404 ,lng:62 },
-                { nome: "P71",lat:404 ,lng:329 },
-                { nome: "P72",lat:426 ,lng:62 },
-                { nome: "P73",lat:426 ,lng:92 },
-                { nome: "P74",lat:426 ,lng:123 },
-                { nome: "P75",lat:426 ,lng:163 },
-                { nome: "P76",lat:426 ,lng:203 },
-                { nome: "P77",lat:426 ,lng:248 },
-                { nome: "P78",lat:426 ,lng:284 },
-                { nome: "P79",lat:426 ,lng:329 },
-                { nome: "P80",lat:444 ,lng:62 },
-                { nome: "P81",lat:444 ,lng:329 },
-                { nome: "P82",lat:468 ,lng:62 },
-                { nome: "P83",lat:468 ,lng:93 },
-                { nome: "P84",lat:468 ,lng:123 },
-                { nome: "P85",lat:468 ,lng:161 },
-                { nome: "P86",lat:468 ,lng:200 },
-                { nome: "P87",lat:468 ,lng:245 },
-                { nome: "P88",lat:468 ,lng:276 },
-                { nome: "P89",lat:468 ,lng:329 },
-                { nome: "P90",lat:488 ,lng:62 },
-                { nome: "P91",lat:488 ,lng:329 },
-                { nome: "P92",lat:513 ,lng:62 },
-                { nome: "P93",lat:513 ,lng:62 },
-                { nome: "P94",lat:513 ,lng:125 },
-                { nome: "P95",lat:513 ,lng:163 },
-                { nome: "P96",lat:513 ,lng:202 },
-                { nome: "P97",lat:513 ,lng:246 },
-                { nome: "P98",lat:513 ,lng:280 },
-                { nome: "P99",lat:513 ,lng:329 },
-                { nome: "P100",lat:541 ,lng:59 },
-                { nome: "P101",lat:541 ,lng:100 },
-                { nome: "P102",lat:538 ,lng:329 },
-                { nome: "P103",lat:573 ,lng:64 },
-                { nome: "P104",lat:577 ,lng:103 },
-                { nome: "P105",lat:574 ,lng:146 },
-                { nome: "P106",lat:576 ,lng:177 },
-                { nome: "P107",lat:576 ,lng:216 },
-                { nome: "P108",lat:575 ,lng:254 },
-                { nome: "P109",lat:577 ,lng:291 },
-                { nome: "P110",lat:575 ,lng:328 },
-                { nome: "P111",lat:574 ,lng:360 },
-                { nome: "P112",lat:573 ,lng:411 },
-                { nome: "P113",lat:608 ,lng:100 },
-                { nome: "P114",lat:610 ,lng:177 },
-                { nome: "P115",lat:613 ,lng:251 },
-                { nome: "P116",lat:614 ,lng:324 },
-                { nome: "P117",lat:614 ,lng:361 },
-                { nome: "P118",lat:616 ,lng:412 },
-                { nome: "P119",lat:641 ,lng:123 },
-                { nome: "P120",lat:641 ,lng:178 },
-                { nome: "P121",lat:638 ,lng:249 },
-                { nome: "P122",lat:637 ,lng:287 },
-                { nome: "P123",lat:637 ,lng:319 },
-                { nome: "P124",lat:639 ,lng:360 },
-                { nome: "P125",lat:642 ,lng:410 },
-                { nome: "P126",lat:642 ,lng:430 }
-            ]
+            var vertices = []
+
+            $http({
+                method : "GET",
+                url : "http://192.168.43.147:8080/connections/listall/"
+            }).then(function mySuccess(response) {
+                response.data.map(function (value) {
+                    vertices.push({
+						nome: "P" + value.id,
+						lat: value.x,
+						lng: value.y
+					})
+				})
+
+                importaImagem()
+            }, function myError(response) {
+                console.log(response)
+            });
             var steps = null;
             $scope.showList = false;
 
@@ -358,10 +248,10 @@
 			/*PRIMEIRO GET NO BANCO - LISTA DE PRODUTOS*/
             $http({
                 method : "GET",
-                url : "http://192.168.0.25:8080/produtos/listall/"
+                url : "http://192.168.43.147:8080/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
-                importaImagem()
+
             }, function myError(response) {
                 console.log(response)
             });
