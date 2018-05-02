@@ -9,7 +9,9 @@
 	<script>
         angular.module("ondEsta", []);
         angular.module("ondEsta").controller("ondEstaCtrl", function ($scope, $http) {
-
+            $scope.localHost = "http://10.10.10.81:8080";
+            $scope.showConnections = false;
+			$scope.pontosConex = {};
             /*Para desenhar e printar os pontos no click - utilizado apenas quando for fazer o mapa grafo */
             /*var x = 1;
             canvas.addEventListener('click', function(event) {
@@ -22,11 +24,12 @@
 
             $scope.inserirNovoPonto = function () {
 				alert("Clique no local do novo ponto");
+                $scope.showConnections = true;
                 canvas.addEventListener('click', function(event) {
                     context.lineWidth = 5;
                     context.strokeStyle = 'black';
                     context.strokeRect(event.layerX,event.layerY,1,1);
-                    console.log('{ nome: "P'+ (vertices.length + 1) +'",lat:' + event.layerX.toString() +' ,lng:' + event.layerY.toString() + ' },');
+                    $scope.pontosConex = { nome: "P" + (vertices.length + 1),lat: event.layerX,lng: event.layerY };
                 }, false)
             };
 
@@ -134,7 +137,7 @@
 
                             /*atualizo no banco*/
                             $http({
-                                url: 'http://192.168.43.147:8080/produtos',
+                                url:  $scope.localHost + '/produtos',
                                 method: "PUT",
                                 data: produto
                             })
@@ -153,7 +156,7 @@
 						ponto: $scope.produto.ponto
 					}
                     $http({
-                        url: 'http://192.168.43.147:8080/produtos',
+                        url: $scope.localHost + '/produtos',
                         method: "POST",
                         data: x
                     })
@@ -196,6 +199,44 @@
                 };
             };
 
+            $scope.insertConnection = function () {
+                $scope.connections.push({ponto: $scope.o.newConnection});
+                $scope.o.newConnection = null;
+            }
+
+            $scope.finishPoints = function () {
+				console.log($scope.pontosConex);
+				console.log($scope.connections);
+
+				var txt =""
+
+				$scope.connections.map(function (value, index) {
+				    if(index < $scope.connections.length -1){
+                        txt += "," + value.ponto;
+					}else{
+                        txt += "," + value.ponto + ",";
+					}
+				});
+
+				var con = {
+				    connections: txt,
+					x: $scope.pontosConex.lat,
+					y: $scope.pontosConex.lng
+				};
+
+                $http({
+                    url: $scope.localHost + '/connections',
+                    method: "POST",
+                    data: con
+                })
+                    .then(function(response) {
+
+                        },
+                        function(response) { // optional
+
+                        });
+            }
+
             /*CANVAS*/
             var context = document.getElementById('myCanvas').getContext('2d');
             var canvas = document.getElementById('myCanvas');
@@ -209,7 +250,7 @@
 
             $http({
                 method : "GET",
-                url : "http://192.168.43.147:8080/connections/listall/"
+                url :  $scope.localHost + "/connections/listall/"
             }).then(function mySuccess(response) {
                 response.data.map(function (value) {
                     vertices.push({
@@ -237,10 +278,15 @@
             $scope.btnAlterar = false;
             $scope.btnNovoProduto = true;
 
+            $scope.connections = [  ];
+
+            $scope.o = {}
+            $scope.o.newConnection = null;
+
             /*Get na lista para carregar*/
             $http({
                 method : "GET",
-                url : "http://192.168.43.147:8080/produtos/listall/"
+                url :  $scope.localHost + "/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
                 importaImagem();
@@ -261,7 +307,7 @@
 			<h1> <a style="color: black" href="index.html">ondEstá? - Gerenciador</a></strong><small> - Supermercado Carrefour Campinas Cambuí</small></h1>
 		</div>
 
-		<div class="col-xs-6 col-sm-4 sidebar-offcanvas text-center" style="margin-top: 10px; height: 600px">
+		<div class="col-sm-4 sidebar-offcanvas text-center" style="margin-top: 10px; height: 600px">
 			<div class="panel panel-default">
 				<div class="panel-heading clearfix">
 					<h3 class="panel-title">Lista de Produtos</h3>
@@ -322,7 +368,7 @@
 				</ul>
 			</div>-->
 		</div>
-		<div class="col-sm-6">
+		<div class="col-sm-8">
 			<h3>Informações sobre o produto</h3>
 			<div class="col-sm-6">
 				<div class="input-group">
@@ -334,25 +380,48 @@
 					<input type="number" class=" valueManager form-control " placeholder="Ponto do produto no mapa" ng-model="produto.ponto" ng-disabled="permiteAlterar">
 				</div>
 				<br>
-				<button ng-if="btnAlterar" type="button" class="btn btn-danger pull-right" ng-click="alterarProduto()">Alterar produto</button>
+				<button ng-if="btnAlterar" type="button" class="btn btn-danger pull-right" ng-click="alterarProduto()">Alterar</button>
 				<button ng-if="btnSalvar" type="button" class="btn btn-success pull-left" ng-click="salvarProduto()">Salvar</button>
 				<button ng-if="btnSalvar" type="button" class="btn btn-danger pull-right" ng-click="limparArea()">Cancelar</button>
-				<button ng-if="btnNovoProduto" type="button" class="btn btn-default pull-left" ng-click="inserirProduto()">Inserir Novo Produto</button>
+				<button ng-if="btnNovoProduto" type="button" class="btn btn-default pull-left" ng-click="inserirProduto()">Novo</button>
 			</div>
-			<canvas id='myCanvas' width='680' height='460'>
-				Canvas not supported
-			</canvas>
+			<div class="row">
+				<div class="col-sm-9" style="padding: 0">
+					<canvas id='myCanvas' width='680' height='460'>
+						Canvas not supported
+					</canvas>
+				</div>
 
-			<button type="button" class="btn btn-danger pull-right" ng-click="inserirNovoPonto()">Inserir novo ponto</button>
-			<hr>
-			<div class="input-group">
-				<span class="titleManager input-group-addon ">Pontos</span>
-				<input type="text" class=" valueManager form-control " placeholder="Número do ponto">
+				<div class="col-sm-2" style="padding-left:25px;">
+					<div class="row">
+						<button ng-if="connections.length === 0" type="button" class="btn btn-success pull-left" ng-click="inserirNovoPonto()">Novo ponto</button>
+					</div>
+					<br>
+					<div ng-if="showConnections">
+						<div class="row">
+							<div ng-repeat="c in connections track by $id(c)">
+								<div class="input-group">
+									<span class="titleManager input-group-addon ">Conexão {{$index + 1}}</span>
+									<input type="text" class=" valueManager form-control " placeholder="Número do ponto" ng-model="c.ponto">
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="row">
+							<div class="input-group">
+								<span class="input-group-addon ">Add</span>
+								<input type="number" class="form-control" placeholder="Número da conexão" ng-model="o.newConnection">
+							</div>
+							<br>
+							<button type="button" class="btn btn-default pull-left" ng-click="insertConnection()">+</button>
+							<button type="button" ng-if="connections.length > 0" class="btn btn-success pull-right" ng-click="finishPoints()">Finalizar</button>
+						</div>
+					</div>
+
+					<hr>
+				</div>
 			</div>
-			<hr>
-			<hr>
-
-
+		</div>
 	</div>
 </div>
 

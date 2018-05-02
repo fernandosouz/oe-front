@@ -10,8 +10,7 @@
         angular.module("ondEsta", []);
         angular.module("ondEsta").controller("ondEstaCtrl", function ($scope, $http) {
 
-
-            $scope.showMap = true;
+            $scope.localHost = "http://10.10.10.81:8080"
 
             /*Para desenhar e printar os pontos no click - utilizado apenas quando for fazer o mapa grafo */
             /*var x = 1;
@@ -179,7 +178,7 @@
 
                 $http({
                     method : "GET",
-                    url : 'http://192.168.43.147:8080/dijkstra/' + a + '/' + p.ponto,
+                    url : $scope.localHost + '/dijkstra/' + a + '/' + p.ponto,
                     transformResponse: [function (data, headers) { //retornar sem parse
                         return data;
                     }]
@@ -224,7 +223,7 @@
 
             $http({
                 method : "GET",
-                url : "http://192.168.43.147:8080/connections/listall/"
+                url : $scope.localHost + "/connections/listall/"
             }).then(function mySuccess(response) {
                 response.data.map(function (value) {
                     vertices.push({
@@ -241,14 +240,14 @@
             var steps = null;
             $scope.showList = false;
 
-            var a = 99;
+            var a = 126;
             var imageDataContext = null;
             document.getElementById('myInput').focus();
 
 			/*PRIMEIRO GET NO BANCO - LISTA DE PRODUTOS*/
             $http({
                 method : "GET",
-                url : "http://192.168.43.147:8080/produtos/listall/"
+                url : $scope.localHost + "/produtos/listall/"
             }).then(function mySuccess(response) {
                 $scope.friends = response.data;
 
